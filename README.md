@@ -69,6 +69,7 @@ exports.destroy = function(req, res) {
 ## APIs
 
 ### .resources(name, [options])
+
 默认绑定 `index`, `show`, `new`, `edit`, `create`, `update`, `destroy` 七个 actions。
 
 `options` 支持：
@@ -77,6 +78,7 @@ exports.destroy = function(req, res) {
 - `except`: 排除指定的 actions，必须传入数组
 
 举个栗子:chestnut:：
+
 ```bash
 app.resources('users')
 
@@ -100,10 +102,12 @@ POST /person.:format?       users#create
 ```
 
 ### .resource(name, [options])
+
 默认绑定 `show`, `new`, `edit`, `create`, `update`, `destroy` 六个 actions。
 `options` 同 `resources`。
 
 举个:chestnut:：
+
 ```bash
 app.resource('users')
 
@@ -116,6 +120,7 @@ DELETE /users.:format?        users#destroy
 ```
 
 ### .member(routes)  /  .collection(routes)
+
 这两个方法用于创建非 RESTful 的路由，只能在 `resources` 或 `resource` 的回调中使用：
 
 ```bash
@@ -140,6 +145,7 @@ GET  /users/avatar.:format?    users#avatar
 ```
 
 回调君还能协助实现嵌套路由，上:chestnut:：
+
 ```bash
 app.resources('users', { only: ['show'] }, function() {
   this.resources('tweets', function() {
@@ -163,7 +169,9 @@ GET    /users/:user_id/tweets/:tweet_id/comments.:format?   comments#show
 ```
 
 ### .match(path, [namespace/]controller#action)
+
 使某个 controller 下的 action 与指定的路径匹配，同时兼容 `get`, `post`, `put`, `delete` 四个 HTTP verbs。
+
 ```bash
 app.match('/login', 'sessions#new')
 
@@ -171,6 +179,7 @@ GET|POST|PUT|DELETE  /login.:format?   sessions#new
 ```
 
 ### .namespace(path, callback)
+
 ```bash
 app.namespace('admin', function() {
   // load `./controllers/admin/users_controller.js`
