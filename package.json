@@ -1,0 +1,28 @@
+{
+  "name": "railstyle-router",
+  "description": "Rails-like routing for Express 3.x",
+  "version": "1.0.0",
+  "keywords": [
+    "rails-like",
+    "rest",
+    "resources",
+    "resource",
+    "namespace",
+    "match",
+    "before_filter"
+  ],
+  "dependencies": {
+    "underscore": ">= 1.4.0",
+    "lingo": ">= 0.0.5"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  },
+  "author": "junjun.zhang <i@mrzhang.me>",
+  "repository": "git://github.com/jsw0528/railstyle-router.git",
+  "main": "./index.js",
+  "engines": {
+    "node": "*",
+    "express": "3.x"
+  }
+}
