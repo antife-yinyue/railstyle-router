@@ -1,7 +1,7 @@
 {
   "name": "railstyle-router",
   "description": "Rails-like routing for Express 3.x",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "keywords": [
     "rails-like",
     "rest",
@@ -16,6 +16,7 @@
     "lingo": ">= 0.0.5"
   },
   "devDependencies": {
+    "chai": "*",
     "mocha": "*"
   },
   "author": {
