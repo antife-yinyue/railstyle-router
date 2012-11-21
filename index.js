@@ -1,5 +1,5 @@
 /*!
- * Railstyle Router v1.0.0
+ * Railstyle Router v1.1.0
  * Copyright(c) 2012 wǒ_is神仙 <i@mrzhang.me>
  * MIT Licensed
  */
@@ -33,6 +33,9 @@ Array.prototype.concat('resources', 'resource').forEach(function(api) {
 
     var router = new Router(this, name, options, api === 'resources')
     util.isFunction(callback) && callback.call(router)
+
+    // chain
+    return router
   }
 })
 
@@ -70,8 +73,14 @@ app['match'] = function(path, to) {
  * })
  */
 app['namespace'] = function(path, callback) {
+  var router = new Router(this, null, {namespace: path})
+
   this.routesMap[path + '/'] = {}
-  callback.call(new Router(this, null, {namespace: path}))
+
+  util.isFunction(callback) && callback.call(router)
+
+  // chain
+  return router
 }
 
 app['routesMap'] = {

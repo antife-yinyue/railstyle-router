@@ -1,6 +1,6 @@
 # Rails-like routing for Express 3.x
 
-高仿 Rails 路由的几个常用方法，支持 namespace，支持多级嵌套，支持 before_filter。欢迎 Pull Requests。
+高仿 Rails 路由的几个常用方法，支持 namespace，支持（链式）多级嵌套，支持 before_filter。欢迎 Pull Requests。
 
 ## Installation
 
@@ -121,7 +121,7 @@ DELETE /users.:format?        users#destroy
 
 ### .member(routes)  /  .collection(routes)
 
-这两个方法用于创建非 RESTful 的路由，只能在 `resources` 或 `resource` 的回调中使用：
+这两个方法用于创建非 RESTful 的路由，配合 `resources` 和 `resource` 使用：
 
 ```bash
 app.resources('users', { only: [] }, function() {
@@ -168,6 +168,27 @@ POST   /users/:user_id/tweets/:id/balabala.:format?         tweets#balabala
 GET    /users/:user_id/tweets/:tweet_id/comments.:format?   comments#show
 ```
 
+不喜欢回调回调再回调？试试链式的：
+
+```bash
+app.resources('users', { only: ['show'] })
+   .resources('tweets').member({ post: 'balabala' })
+   .resource('comments', { only: ['show'] })
+
+GET    /users/:id.:format?                                  users#show
+
+GET    /users/:user_id/tweets.:format?                      tweets#index
+GET    /users/:user_id/tweets/:id.:format?                  tweets#show
+GET    /users/:user_id/tweets/new.:format?                  tweets#new
+GET    /users/:user_id/tweets/:id/edit.:format?             tweets#edit
+POST   /users/:user_id/tweets.:format?                      tweets#create
+PUT    /users/:user_id/tweets/:id.:format?                  tweets#update
+DELETE /users/:user_id/tweets/:id.:format?                  tweets#destroy
+POST   /users/:user_id/tweets/:id/balabala.:format?         tweets#balabala
+
+GET    /users/:user_id/tweets/:tweet_id/comments.:format?   comments#show
+```
+
 ### .match(path, [namespace/]controller#action)
 
 使某个 controller 下的 action 与指定的路径匹配，同时兼容 `get`, `post`, `put`, `delete` 四个 HTTP verbs。
@@ -185,6 +206,18 @@ app.namespace('admin', function() {
   // load `./controllers/admin/users_controller.js`
   this.resources('users', { except: ['index', 'destroy'] })
 })
+
+GET  /admin/users/:id.:format?        admin/users#show
+GET  /admin/users/new.:format?        admin/users#new
+GET  /admin/users/:id/edit.:format?   admin/users#edit
+POST /admin/users.:format?            admin/users#create
+PUT  /admin/users/:id.:format?        admin/users#update
+```
+
+同样支持链式：
+
+```bash
+app.namespace('admin').resources('users', { except: ['index', 'destroy'] })
 
 GET  /admin/users/:id.:format?        admin/users#show
 GET  /admin/users/new.:format?        admin/users#new
