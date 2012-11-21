@@ -1,5 +1,5 @@
 /*!
- * Railstyle Router v1.1.0
+ * Railstyle Router v1.1.1
  * Copyright(c) 2012 wǒ_is神仙 <i@mrzhang.me>
  * MIT Licensed
  */
@@ -45,11 +45,15 @@ Array.prototype.concat('resources', 'resource').forEach(function(api) {
  * app.match('path', 'namespace/controller#action')
  */
 app['match'] = function(path, to) {
-  var i = to.lastIndexOf('/')
-  var j = to.lastIndexOf('#')
-  var namespace = to.slice(0, i)
-  var controller = to.slice(i + 1, j)
-  var action = to.slice(j + 1)
+  var i = to.lastIndexOf('#')
+  if (i === -1) {
+    return false
+  }
+
+  var j = to.lastIndexOf('/')
+  var namespace = j !== -1 && to.slice(0, j)
+  var controller = to.slice(j + 1, i)
+  var action = to.slice(i + 1)
   var actions = require(util.setController(this, namespace, controller))
 
   var cb = actions[action]
