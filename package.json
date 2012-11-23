@@ -1,7 +1,7 @@
 {
   "name": "railstyle-router",
   "description": "Rails-like routing for Express 3.x",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "keywords": [
     "rails-like",
     "rest",
@@ -12,7 +12,6 @@
     "before_filter"
   ],
   "dependencies": {
-    "underscore": ">= 1.4.0",
     "lingo": ">= 0.0.5"
   },
   "devDependencies": {
