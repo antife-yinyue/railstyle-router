@@ -1,5 +1,5 @@
 /*!
- * Railstyle Router v1.1.2
+ * Railstyle Router v1.2.0
  * Copyright(c) 2012 wǒ_is神仙 <i@mrzhang.me>
  * MIT Licensed
  */
@@ -54,15 +54,14 @@ app['match'] = function(path, to) {
   var namespace = j !== -1 && to.slice(0, j)
   var controller = to.slice(j + 1, i)
   var action = to.slice(i + 1)
+
   var actions = require(util.setController(this, namespace, controller))
-
-  var cb = actions[action]
-  util.isFunction(cb) || (cb = util.throwError(namespace, controller, action))
-
   var before = actions['before_filter']
   var args = before ? util.combo(before['*'], before[action]) : []
   args.unshift(path)
-  args.push(cb)
+  args.push(
+    util.createCallback(actions[action], namespace, controller, action)
+  )
 
   this.all.apply(this, args)
 }
