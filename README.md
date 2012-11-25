@@ -32,6 +32,10 @@ app.match('/login', 'sessions#new')
 ```javascript
 // GET /users
 exports.index = function(req, res) {
+  console.log(req.namespace)
+  console.log(req.controller)
+  console.log(req.action)
+
   res.send('index')
 }
 
