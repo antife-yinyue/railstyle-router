@@ -1,5 +1,5 @@
 /*!
- * Railstyle Router v1.2.0
+ * Railstyle Router v1.3.0
  * Copyright(c) 2012 wǒ_is神仙 <i@mrzhang.me>
  * MIT Licensed
  */
@@ -56,8 +56,7 @@ app['match'] = function(path, to) {
   var action = to.slice(i + 1)
 
   var actions = require(util.setController(this, namespace, controller))
-  var before = actions['before_filter']
-  var args = before ? util.combo(before['*'], before[action]) : []
+  var args = util.combo(actions['before_filter'], action)
   args.unshift(path)
   args.push(
     util.createCallback(actions[action], namespace, controller, action)

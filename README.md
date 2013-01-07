@@ -232,24 +232,29 @@ PUT  /admin/users/:id.:format?        admin/users#update
 
 ## before_filter
 
-在 controller 文件中加上如下代码即可。星号 `*` 匹配所有 actions，且优先级最高。
+在 controller 文件中加上如下代码即可。action 跟 middleware 可以一对一、一对多、多对一、多对多。星号 `*` 匹配所有 actions，且优先级最高。
 
 ```javascript
 exports.before_filter = {
-  '*': auth,
-  create: admin,
-  destroy: [admin, master]
+  '*': fn1,
+  'create, update': fn2,
+  'create': [fn3, fn4],
+  'destroy': fn4
 }
 
-function auth(req, res, next) {
+function fn1(req, res, next) {
   // ...
   next()
 }
-function admin(req, res, next) {
+function fn2(req, res, next) {
   // ...
   next()
 }
-function master(req, res, next) {
+function fn3(req, res, next) {
+  // ...
+  next()
+}
+function fn4(req, res, next) {
   // ...
   next()
 }
