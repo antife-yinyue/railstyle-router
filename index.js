@@ -7,10 +7,11 @@
 /**
  * Module dependencies.
  */
-var app = require('express').application
+var express = require('express').application
 var Router = require('./lib/router')
 var util = require('./lib/utils')
-
+var METHODS = Router._methods
+var ACTIONS = Router._actions
 
 /**
  * Resource routing allows you to quickly declare all of the common routes for
@@ -24,7 +25,7 @@ var util = require('./lib/utils')
  *   except -> Generate all routes except for the given actions.
  */
 Array.prototype.concat('resources', 'resource').forEach(function(api) {
-  app[api] = function(name, options, callback) {
+  express[api] = function(name, options, callback) {
     if (util.isFunction(options)) {
       callback = options
       options = {}
@@ -44,7 +45,7 @@ Array.prototype.concat('resources', 'resource').forEach(function(api) {
  *
  * app.match('path', 'namespace/controller#action')
  */
-app['match'] = function(path, to) {
+express['match'] = function(path, to) {
   var i = to.lastIndexOf('#')
   if (i === -1) {
     return false
@@ -55,14 +56,31 @@ app['match'] = function(path, to) {
   var controller = to.slice(j + 1, i)
   var action = to.slice(i + 1)
 
-  var actions = require(util.setController(this, namespace, controller))
+  var app = this
+  var actions = require(util.setController(app, namespace, controller))
   var args = util.combo(actions['before_filter'], action)
+
   args.unshift(path)
   args.push(
     util.createCallback(actions[action], namespace, controller, action)
   )
 
-  this.all.apply(this, args)
+  switch (i = ACTIONS.indexOf(action)) {
+    case -1:
+      METHODS.forEach(function(method) {
+        app[method].apply(app, args)
+      })
+      break
+
+    case 4:
+    case 5:
+    case 6:
+      app[METHODS[i - 3]].apply(app, args)
+      break
+
+    default:
+      app.get.apply(app, args)
+  }
 }
 
 /**
@@ -74,7 +92,7 @@ app['match'] = function(path, to) {
  *   ...
  * })
  */
-app['namespace'] = function(path, callback) {
+express['namespace'] = function(path, callback) {
   var router = new Router(this, null, {namespace: path})
 
   this.routesMap[path + '/'] = {}
@@ -85,6 +103,6 @@ app['namespace'] = function(path, callback) {
   return router
 }
 
-app['routesMap'] = {
+express['routesMap'] = {
   '/': {}
 }
