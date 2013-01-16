@@ -130,11 +130,54 @@ describe('', function() {
     routes.post.should.include('/users/:user_id/tweets/:id/balabala.:format?')
   })
 
-  it('app.match', function() {
-    app.match('/login', 'sessions#new')
+  it('app.match[1]', function() {
+    app.match('/login', 'sessions#show')
     routes = mapRoutes(app)
 
     routes.get.should.include('/login')
+    routes.post.should.be.empty
+    routes.put.should.be.empty
+    routes.delete.should.be.empty
+  })
+
+  it('app.match[2]', function() {
+    app.match('/login', 'sessions#create')
+    routes = mapRoutes(app)
+
+    routes.get.should.be.empty
+    routes.post.should.include('/login')
+    routes.put.should.be.empty
+    routes.delete.should.be.empty
+  })
+
+  it('app.match[3]', function() {
+    app.match('/login', 'sessions#update')
+    routes = mapRoutes(app)
+
+    routes.get.should.be.empty
+    routes.post.should.be.empty
+    routes.put.should.include('/login')
+    routes.delete.should.be.empty
+  })
+
+  it('app.match[4]', function() {
+    app.match('/login', 'sessions#destroy')
+    routes = mapRoutes(app)
+
+    routes.get.should.be.empty
+    routes.post.should.be.empty
+    routes.put.should.be.empty
+    routes.delete.should.include('/login')
+  })
+
+  it('app.match[5]', function() {
+    app.match('/login', 'sessions#login')
+    routes = mapRoutes(app)
+
+    routes.get.should.include('/login')
+    routes.post.should.include('/login')
+    routes.put.should.include('/login')
+    routes.delete.should.include('/login')
   })
 
   it('app.namespace', function() {
