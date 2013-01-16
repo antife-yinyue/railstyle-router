@@ -99,6 +99,7 @@ describe('', function() {
       })
     })
     routes = mapRoutes(app)
+    console.log(routes)
 
     routes.get.should
       .include('/users/:id/profile.:format?').and
@@ -108,9 +109,9 @@ describe('', function() {
   })
 
   it('nested routes', function() {
-    app.resources('users', { only: ['show'] }, function() {
+    app.resources('users', { only: 'show' }, function() {
       this.resources('tweets', function() {
-        this.resource('comments', { only: ['show'] })
+        this.resource('comments', { only: 'show' })
         this.member({ post: 'balabala' })
       })
     })
@@ -121,9 +122,9 @@ describe('', function() {
   })
 
   it('chain', function() {
-    app.resources('users', { only: ['show'] })
+    app.resources('users', { only: 'show' })
        .resources('tweets').member({ post: 'balabala' })
-       .resource('comments', { only: ['show'] })
+       .resource('comments', { only: 'show' })
     routes = mapRoutes(app)
 
     routes.get.should.include('/users/:user_id/tweets/:tweet_id/comments.:format?')

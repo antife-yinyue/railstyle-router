@@ -1,6 +1,6 @@
 # Rails-like routing for Express 3.x
 
-高仿 Rails 路由的几个常用方法，支持 namespace，支持（链式）多级嵌套，支持 before_filter。欢迎 Pull Requests。
+高仿 Rails 路由的几个常用方法，支持 namespace，支持（链式）多级嵌套，支持 before_filter 和 skip_before_filter。欢迎 Pull Requests。
 
 ## Installation
 
@@ -10,7 +10,7 @@ $ npm install railstyle-router
 
 ## Usage
 
-```javascript
+```js
 var express = require('express')
 require('railstyle-router')
 
@@ -29,7 +29,7 @@ app.match('/login', 'sessions#new')
 
 `./controllers/users_controller.js`:
 
-```javascript
+```js
 // GET /users
 exports.index = function(req, res) {
   console.log(req.namespace)
@@ -78,8 +78,8 @@ exports.destroy = function(req, res) {
 
 `options` 支持：
 - `path`: 重写 URL 路径，不设置则默认同 `name` 一致
-- `only`: 指定需要的 actions，必须传入数组
-- `except`: 排除指定的 actions，必须传入数组
+- `only`: 指定需要保留的 actions，可以传入数组，亦可传入以逗号分隔的字符串。如果想排除所有的 actions，请传入空数组 `[]`，而非空字符串或其他
+- `except`: 排除指定的 actions，可以传入数组，亦可传入以逗号分隔的字符串
 
 举个栗子:chestnut:：
 
@@ -151,9 +151,9 @@ GET  /users/avatar.:format?    users#avatar
 回调君还能协助实现嵌套路由，上:chestnut:：
 
 ```bash
-app.resources('users', { only: ['show'] }, function() {
+app.resources('users', { only: 'show' }, function() {
   this.resources('tweets', function() {
-    this.resource('comments', { only: ['show'] })
+    this.resource('comments', { only: 'show' })
     this.member({ post: 'balabala' })
   })
 })
@@ -175,9 +175,9 @@ GET    /users/:user_id/tweets/:tweet_id/comments.:format?   comments#show
 不喜欢回调回调再回调？试试链式的：
 
 ```bash
-app.resources('users', { only: ['show'] })
+app.resources('users', { only: 'show' })
    .resources('tweets').member({ post: 'balabala' })
-   .resource('comments', { only: ['show'] })
+   .resource('comments', { only: 'show' })
 
 GET    /users/:id.:format?                                  users#show
 
@@ -195,12 +195,24 @@ GET    /users/:user_id/tweets/:tweet_id/comments.:format?   comments#show
 
 ### .match(path, [namespace/]controller#action)
 
-使某个 controller 下的 action 与指定的路径匹配，同时兼容 `get`, `post`, `put`, `delete` 四个 HTTP verbs。
+使某个 controller 下的 action 与指定的路径匹配，同时兼容 `get`, `post`, `put`, `delete` 四个 HTTP verbs。如果这个 action 属于 `.resources()` 默认 actions 的其中之一，则只会匹配相对应的路由。
 
 ```bash
 app.match('/login', 'sessions#new')
 
-GET|POST|PUT|DELETE  /login.:format?   sessions#new
+GET  /login.:format?   sessions#new
+```
+
+```bash
+app.match('/login', 'sessions#create')
+
+POST  /login.:format?   sessions#create
+```
+
+```bash
+app.match('/login', 'sessions#ooxx')
+
+GET|POST|PUT|DELETE  /login.:format?   sessions#ooxx
 ```
 
 ### .namespace(path, callback)
@@ -234,7 +246,7 @@ PUT  /admin/users/:id.:format?        admin/users#update
 
 在 controller 文件中加上如下代码即可。action 跟 middleware 可以一对一、一对多、多对一、多对多。星号 `*` 匹配所有 actions，且优先级最高。
 
-```javascript
+```js
 exports.before_filter = {
   '*': fn1,
   'create, update': fn2,
@@ -257,6 +269,49 @@ function fn3(req, res, next) {
 function fn4(req, res, next) {
   // ...
   next()
+}
+```
+
+如果一个项目所有页面都需要登录后才能访问，你会想到什么？在所有 controller 文件里写 `exports.before_filter = { '*': checkLogin }`。没错，可是不是太麻烦呢？然后你肯定会想到使用 Express 的 `app.use()`，哈哈，非常正确！这时PM邪恶的说，把其中N个页面排除在外，不登录也能访问。此时你内心独白会不会是：靠！
+
+呵呵~ 别怕，往下看！
+
+## skip_before_filter
+
+在需要 skip 的 controller 里：
+
+```js
+exports.skip_before_filter = ['new', 'show']
+// 等价
+// exports.skip_before_filter = 'new, show'
+```
+
+然后你的 `app.use()` 可以这样：
+
+```js
+app.use(function(req, res, next) {
+  if (req.skip_before_filter) {
+    return next()
+  }
+  // ...
+})
+```
+
+借助 `app.use()` 可以解决全局问题，当然如果单个 controller 是下面这样，skip_before_filter 自动生效：
+
+```js
+exports.before_filter = {
+  'create, update': fn
+}
+
+exports.skip_before_filter = 'create'
+```
+
+等价于：
+
+```js
+exports.before_filter = {
+  'update': fn
 }
 ```
 
