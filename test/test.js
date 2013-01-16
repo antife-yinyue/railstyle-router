@@ -99,7 +99,6 @@ describe('', function() {
       })
     })
     routes = mapRoutes(app)
-    console.log(routes)
 
     routes.get.should
       .include('/users/:id/profile.:format?').and
