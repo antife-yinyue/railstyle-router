@@ -11,9 +11,8 @@ $ npm install railstyle-router
 ## Usage
 
 ```js
-var express = require('express')
 require('railstyle-router')
-
+var express = require('express')
 var app = express()
 
 app.configure(function() {
