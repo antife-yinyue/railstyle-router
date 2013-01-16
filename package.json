@@ -9,7 +9,8 @@
     "resource",
     "namespace",
     "match",
-    "before_filter"
+    "before_filter",
+    "skip_before_filter"
   ],
   "dependencies": {
     "lingo": ">= 0.0.5"
