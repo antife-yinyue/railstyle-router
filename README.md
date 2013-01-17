@@ -124,7 +124,7 @@ DELETE /users.:format?        users#destroy
 
 ### .member(routes)  /  .collection(routes)
 
-这两个方法用于创建非 RESTful 的路由，配合 `resources` 和 `resource` 使用：
+这两个方法用于创建非 [RESTful](http://en.wikipedia.org/wiki/Representational_state_transfer) 的路由，配合 `resources` 和 `resource` 使用：
 
 ```bash
 app.resources('users', { only: [] }, function() {

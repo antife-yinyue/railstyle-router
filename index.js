@@ -55,12 +55,11 @@ express['match'] = function(path, to, via) {
 
   var app = this
   var actions = require(util.setController(app, namespace, controller))
-  var skips = util.toArray(actions['skip_before_filter'])
-  var args = util.combo(action, actions['before_filter'], skips)
+  var args = util.combo(app, action, actions['before_filter'], actions['skip_before_filter'])
 
   args.unshift(path)
   args.push(
-    util.createCallback(actions[action], namespace, controller, action, skips)
+    util.createCallback(actions[action], namespace, controller, action)
   )
 
   if (via = util.toArray(via)) {
