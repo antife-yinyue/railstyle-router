@@ -4,9 +4,6 @@
  * MIT Licensed
  */
 
-/**
- * Module dependencies.
- */
 var express = require('express').application
 var Router = require('./lib/router')
 var util = require('./lib/utils')
@@ -43,9 +40,9 @@ Array.prototype.concat('resources', 'resource').forEach(function(api) {
 /**
  * Matches a url pattern to one or more routes.
  *
- * app.match('path', 'namespace/controller#action')
+ * app.match('path', 'namespace/controller#action', 'methods')
  */
-express['match'] = function(path, to) {
+express['match'] = function(path, to, via) {
   var i = to.lastIndexOf('#')
   if (i === -1) {
     return false
@@ -65,6 +62,13 @@ express['match'] = function(path, to) {
   args.push(
     util.createCallback(actions[action], namespace, controller, action, skips)
   )
+
+  if (via = util.toArray(via)) {
+    via.forEach(function(method) {
+      app[method].apply(app, args)
+    })
+    return false
+  }
 
   switch (i = ACTIONS.indexOf(action)) {
     case -1:

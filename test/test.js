@@ -180,6 +180,16 @@ describe('', function() {
     routes.delete.should.include('/login')
   })
 
+  it('app.match[:via]', function() {
+    app.match('/login', 'sessions#login', 'get, post')
+    routes = mapRoutes(app)
+
+    routes.get.should.include('/login')
+    routes.post.should.include('/login')
+    routes.put.should.be.empty
+    routes.delete.should.be.empty
+  })
+
   it('app.namespace', function() {
     var users = app.namespace('admin', function() {
       this.resources('users')

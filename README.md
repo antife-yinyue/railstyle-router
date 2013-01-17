@@ -192,9 +192,9 @@ POST   /users/:user_id/tweets/:id/balabala.:format?         tweets#balabala
 GET    /users/:user_id/tweets/:tweet_id/comments.:format?   comments#show
 ```
 
-### .match(path, [namespace/]controller#action)
+### .match(path, [namespace/]controller#action, [via])
 
-使某个 controller 下的 action 与指定的路径匹配，同时兼容 `get`, `post`, `put`, `delete` 四个 HTTP verbs。如果这个 action 属于 `.resources()` 默认 actions 的其中之一，则只会匹配相对应的路由。
+使某个 controller 下的 action 与指定的路径匹配，`via` 默认同时包括 `get`, `post`, `put`, `delete` 四个 HTTP methods。如果这个 action 属于 `.resources()` 默认 actions 的其中之一，则只会匹配相对应的路由。
 
 ```bash
 app.match('/login', 'sessions#new')
@@ -212,6 +212,12 @@ POST  /login.:format?   sessions#create
 app.match('/login', 'sessions#ooxx')
 
 GET|POST|PUT|DELETE  /login.:format?   sessions#ooxx
+```
+
+```bash
+app.match('/login', 'sessions#ooxx', 'get, post')
+
+GET|POST  /login.:format?   sessions#ooxx
 ```
 
 ### .namespace(path, callback)
