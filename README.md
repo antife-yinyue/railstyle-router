@@ -194,7 +194,7 @@ GET    /users/:user_id/tweets/:tweet_id/comments.:format?   comments#show
 
 ### .match(path, [namespace/]controller#action, [via])
 
-使某个 controller 下的 action 与指定的路径匹配，`via` 默认同时包括 `get`, `post`, `put`, `delete` 四个 HTTP methods。如果这个 action 属于 `.resources()` 默认 actions 的其中之一，则只会匹配相对应的路由。
+使某个 controller 下的 action 与指定的路径匹配，如果这个 action 属于 `.resources()` 默认 actions 的其中之一，则只会匹配相对应的 HTTP method。`via` 默认同时包括 `get`, `post`, `put`, `delete` 四个 HTTP methods，使用该参数可以覆盖 RESTful 规则。
 
 ```bash
 app.match('/login', 'sessions#new')
@@ -259,64 +259,33 @@ exports.before_filter = {
   'destroy': fn4
 }
 
-function fn1(req, res, next) {
-  // ...
-  next()
-}
-function fn2(req, res, next) {
-  // ...
-  next()
-}
-function fn3(req, res, next) {
-  // ...
-  next()
-}
-function fn4(req, res, next) {
-  // ...
-  next()
-}
+function fn1(req, res, next) { //... }
+function fn2(req, res, next) { //... }
+function fn3(req, res, next) { //... }
+function fn4(req, res, next) { //... }
 ```
 
-如果一个项目所有页面都需要登录后才能访问，你会想到什么？在所有 controller 文件里写 `exports.before_filter = { '*': checkLogin }`。没错，可是不是太麻烦呢？然后你肯定会想到使用 Express 的 `app.use()`，哈哈，非常正确！这时PM邪恶的说，把其中N个页面排除在外，不登录也能访问。此时你内心独白会不会是：靠！
+### ApplicationController
 
-呵呵~ 别怕，往下看！
+星号 `*` 只能匹配当前 controller，想要在全部 controller 中生效，则需要使用 `application[suffix].js`，优先级比星号 `*` 更高：
+
+```js
+module.exports = exports = function(req, res, next) {
+  // global filter middleware
+}
+
+exports.other = function(req, res, next) { //... }
+```
 
 ## skip_before_filter
 
-在需要 skip 的 controller 里：
+在需要 skip 某些中间件的 controller 里：
 
 ```js
-exports.skip_before_filter = ['new', 'show']
-// 等价
-// exports.skip_before_filter = 'new, show'
-```
-
-然后你的 `app.use()` 可以这样：
-
-```js
-app.use(function(req, res, next) {
-  if (req.skip_before_filter) {
-    return next()
-  }
-  // ...
-})
-```
-
-借助 `app.use()` 可以解决全局问题，当然如果单个 controller 是下面这样，skip_before_filter 自动生效：
-
-```js
-exports.before_filter = {
-  'create, update': fn
-}
-
-exports.skip_before_filter = 'create'
-```
-
-等价于：
-
-```js
-exports.before_filter = {
-  'update': fn
+exports.skip_before_filter = {
+  'new': true,                    // skip everything
+  'create, update': ['-g', fn1],  // `-g` 指 `application[suffix].js` 的 `module.exports`
+  'destroy': [fn2, fn3]           // skip 具体的中间件
 }
 ```
 
