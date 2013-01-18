@@ -2,24 +2,21 @@
  * UsersController
  */
 
-// Middlewares
-function auth(req, res, next) {
-  // ...
-  next()
-}
-function admin(req, res, next) {
-  // ...
-  next()
-}
-function master(req, res, next) {
+var requireLogin = require('./application_controller').requireLogin
+
+function superman(req, res, next) {
   // ...
   next()
 }
 
 exports.before_filter = {
-  '*': auth,
-  create: admin,
-  destroy: [admin, master]
+  '*': superman,
+  'create': requireLogin
+}
+
+exports.skip_before_filter = {
+  'show': true,
+  'new': ['-g', superman]
 }
 
 // GET /users
