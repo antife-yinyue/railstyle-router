@@ -26,7 +26,7 @@ describe('', function() {
   it('load the controller file correctly', function() {
     var users = app.resources('users')
     users.controller.should.equal(
-      app.get('controllers') + '/users' + app.get('controller suffix')
+      app.get('controllers') + '/users' + app.get('controller suffix') + '.js'
     )
   })
 
